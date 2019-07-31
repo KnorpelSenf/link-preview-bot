@@ -1,4 +1,24 @@
+# import everything
+import telegram
+from telegram.ext import Updater
+from telebot.credentials import bot_token, bot_user_name, URL
+from telebot.mastermind import get_response
+
 from flask import escape
+
+global TOKEN
+global bot
+TOKEN = bot_token
+bot = telegram.Bot(token=TOKEN)
+
+
+def main():
+    updater = Updater(TOKEN)
+    # add handlers
+    updater.start_webhook(listen=URL,
+                          url_path='bot-webhook')
+    updater.bot.set_webhook(
+        "https://europe-west1-link-preview-bot.cloudfunctions.net/link-preview-bot")
 
 
 def hello_http(request):
@@ -11,6 +31,20 @@ def hello_http(request):
         Response object using `make_response`
         <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>.
     """
+
+    # retrieve the message in JSON and then transform it to Telegram object
+    update = telegram.Update.de_json(request.get_json(force=True), bot)
+
+    chat_id = update.message.chat.id
+    msg_id = update.message.message_id
+
+    # Telegram understands UTF-8, so encode text for unicode compatibility
+    text = update.message.text.encode('utf-8').decode()
+    print("got text message :", text)
+
+    response = get_response(text)
+    bot.sendMessage(chat_id=chat_id, text=response, reply_to_message_id=msg_id)
+
     request_json = request.get_json(silent=True)
     request_args = request.args
 
@@ -22,31 +56,8 @@ def hello_http(request):
         name = 'World'
     return 'Hello {}!'.format(escape(name))
 
-
-# # import everything
-# import telegram
-# from telegram.ext import Updater
-
-# from telebot.credentials import bot_token, bot_user_name, URL
-# from telebot.mastermind import get_response
-
-# global TOKEN
-# global bot
-# TOKEN = bot_token
-# bot = telegram.Bot(token=TOKEN)
-
-
-# def main():
-#     updater = Updater(TOKEN)
-#     # add handlers
-#     updater.start_webhook(listen=URL,
-#                           url_path='bot-webhook')
-#     updater.bot.set_webhook("https://<appname>.herokuapp.com/" + TOKEN)
-#     updater.idle()
-
-
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
 
 #     # # note the threaded arg which allow
 #     # # your app to have more than one thread
