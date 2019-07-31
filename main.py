@@ -3,12 +3,10 @@ import os
 import telegram
 from telebot.mastermind import get_links
 
+global bot_token
 global bot
 bot_token = os.environ['BOT_TOKEN']
 bot = telegram.Bot(token=bot_token)
-
-if True:
-    raise bot_token
 
 
 def webhook(request):
