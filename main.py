@@ -1,9 +1,10 @@
 # import everything
+import os
 import telegram
-from telebot.credentials import bot_token
 from telebot.mastermind import get_links
 
 global bot
+bot_token = os.environ['BOT_TOKEN']
 bot = telegram.Bot(token=bot_token)
 
 def hello_http(request):
