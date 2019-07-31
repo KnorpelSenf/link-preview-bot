@@ -3,6 +3,7 @@ import os
 import telegram
 from telebot.mastermind import get_links
 
+# Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
 
 global bot
@@ -19,7 +20,8 @@ def webhook(request):
     # Telegram understands UTF-8, so encode text for unicode compatibility
     text = update.message.text.encode('utf-8').decode()
 
-    urls = get_links(text)
+    urls = get_links(text) # magic
+
     if len(urls) == 0:
         bot.send_message(chat_id=chat_id, text='No URLs found.',
                          reply_to_message_id=msg_id)
