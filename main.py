@@ -1,7 +1,6 @@
 # import everything
 import telegram
-from telegram.ext import Updater
-from telebot.credentials import bot_token, bot_user_name, URL
+from telebot.credentials import bot_token
 from telebot.mastermind import get_response
 
 from flask import escape
