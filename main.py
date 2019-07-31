@@ -1,27 +1,12 @@
 # import everything
 import telegram
 from telebot.credentials import bot_token
-from telebot.mastermind import get_response
+from telebot.mastermind import get_links
 
-from flask import escape
-
-global TOKEN
 global bot
-TOKEN = bot_token
-bot = telegram.Bot(token=TOKEN)
-
+bot = telegram.Bot(token=bot_token)
 
 def hello_http(request):
-    """HTTP Cloud Function.
-    Args:
-        request (flask.Request): The request object.
-        <http://flask.pocoo.org/docs/1.0/api/#flask.Request>
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`
-        <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>.
-    """
-
     # retrieve the message in JSON and then transform it to Telegram object
     update = telegram.Update.de_json(request.get_json(force=True), bot)
 
@@ -32,5 +17,7 @@ def hello_http(request):
     text = update.message.text.encode('utf-8').decode()
     print("got text message :", text)
 
-    response = get_response(text)
-    bot.sendMessage(chat_id=chat_id, text=response, reply_to_message_id=msg_id)
+    urls = get_links(text)
+    for url in urls:
+        bot.send_message(chat_id=chat_id, text=url,
+                         reply_to_message_id=msg_id, disable_web_page_preview=False)
