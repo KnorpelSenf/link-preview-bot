@@ -6,10 +6,13 @@ def get_links(msg, entities):
 
     # Prepend protocol if it is missing and remove "m." from URL if present. In some
     # cases this prevents a link preview from being generated.
-    return [remove_mobile(url)
-            if '://' in url
-            else remove_mobile('http://' + url)
-            for url in links]
+    if links is not None:
+        return [remove_mobile(url)
+                if '://' in url
+                else remove_mobile('http://' + url)
+                for url in links]
+    else:
+        return []
 
 
 def remove_mobile(url):
