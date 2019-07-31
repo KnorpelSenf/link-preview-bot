@@ -1,5 +1,6 @@
-import re
+from urlextract import URLExtract
+
+extractor = URLExtract()
 
 def get_links(msg):
-    # see https://stackoverflow.com/q/6883049
-    return re.findall('https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', msg)
+    return extractor.find_urls(msg)
