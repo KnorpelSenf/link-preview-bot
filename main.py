@@ -14,13 +14,17 @@ def webhook(request):
     # retrieve the message in JSON and then transform it to Telegram object
     update = telegram.Update.de_json(request.get_json(force=True), bot)
 
-    chat_id = update.message.chat.id
-    msg_id = update.message.message_id
+    message = update.message
+
+    chat_id = message.chat.id
+    msg_id = message.message_id
 
     # Telegram understands UTF-8, so encode text for unicode compatibility
     text = update.message.text.encode('utf-8').decode()
 
-    urls = get_links(text) # magic
+    entities = message.entities if message.entities is not None else message.caption_entities
+
+    urls = get_links(text, entities) # magic
 
     if len(urls) == 0:
         bot.send_message(chat_id=chat_id, text='No URLs found.',
