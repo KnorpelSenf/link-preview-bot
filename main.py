@@ -16,9 +16,8 @@ def main():
     updater = Updater(TOKEN)
     # add handlers
     updater.start_webhook(listen=URL,
-                          url_path='bot-webhook')
-    updater.bot.set_webhook(
-        "https://europe-west1-link-preview-bot.cloudfunctions.net/link-preview-bot")
+                          url_path='link-preview-bot',
+                          webhook_url="https://europe-west1-link-preview-bot.cloudfunctions.net/link-preview-bot")
 
 
 def hello_http(request):
@@ -55,6 +54,7 @@ def hello_http(request):
     else:
         name = 'World'
     return 'Hello {}!'.format(escape(name))
+
 
 if __name__ == '__main__':
     main()
