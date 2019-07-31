@@ -11,15 +11,6 @@ global bot
 TOKEN = bot_token
 bot = telegram.Bot(token=TOKEN)
 
-
-def main():
-    updater = Updater(TOKEN)
-    # add handlers
-    updater.start_webhook(listen=URL,
-                          url_path='link-preview-bot',
-                          webhook_url="https://europe-west1-link-preview-bot.cloudfunctions.net/link-preview-bot")
-
-
 def hello_http(request):
     """HTTP Cloud Function.
     Args:
@@ -54,10 +45,6 @@ def hello_http(request):
     else:
         name = 'World'
     return 'Hello {}!'.format(escape(name))
-
-
-if __name__ == '__main__':
-    main()
 
 #     # # note the threaded arg which allow
 #     # # your app to have more than one thread
