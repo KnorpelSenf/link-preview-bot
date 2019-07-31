@@ -15,8 +15,8 @@ def hello_http(request):
 
     # Telegram understands UTF-8, so encode text for unicode compatibility
     text = update.message.text.encode('utf-8').decode()
-    print("got text message :", text)
 
+    bot.send_message(chat_id=chat_id, text="There you go:")
     urls = get_links(text)
     for url in urls:
         bot.send_message(chat_id=chat_id, text=url,
