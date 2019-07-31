@@ -1,4 +1,6 @@
 # import everything
+import flask
+
 import os
 import telegram
 from telebot.mastermind import get_links
