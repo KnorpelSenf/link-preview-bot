@@ -7,7 +7,7 @@ global bot
 bot_token = os.environ['BOT_TOKEN']
 bot = telegram.Bot(token=bot_token)
 
-def hello_http(request):
+def webhook(request):
     # retrieve the message in JSON and then transform it to Telegram object
     update = telegram.Update.de_json(request.get_json(force=True), bot)
 
