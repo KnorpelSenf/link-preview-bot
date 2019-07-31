@@ -1,19 +1,21 @@
-def get_links(msg, entities):
-    urls = [entity.url for entity in entities if entity.type == 'url']
-    text_links = [msg[entity.offset:entity.offset + entity.length]
-                  for entity in entities if entity.type == 'text_link']
-    links = (urls if urls is not None else []) + \
-        (text_links if text_links is not None else [])
+import re
 
-    # Prepend protocol if it is missing and remove "m." from URL if present. In some
-    # cases this prevents a link preview from being generated.
-    if links is not None:
-        return [remove_mobile(url)
-                if '://' in url
-                else remove_mobile('http://' + url)
-                for url in links]
-    else:
-        return []
+
+def get_links(msg, entities):
+    urls = []
+    for entity in entities:
+        type = entity.type
+        url = None
+        if type == 'url':
+            url = entity.url
+        elif type == 'text_link':
+            url = msg[entity.offset:entity.offset + entity.length]
+        if url is not None:
+            if not re.match('^[A-Za-z]:\\/\\/', url):
+                url = 'http://' + url
+            url = remove_mobile(url)
+        urls.append(url)
+    return urls
 
 
 def remove_mobile(url):
