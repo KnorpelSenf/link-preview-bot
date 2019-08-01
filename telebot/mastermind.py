@@ -19,7 +19,7 @@ def get_links(msg, entities):
             url = remove_mobile(url)
             urls.append(url)
         else:
-            print('url was None and type was', type)
+            print('url was None and type was', type, 'and we had', len(entities), 'as the number of entities')
     return urls
 
 
