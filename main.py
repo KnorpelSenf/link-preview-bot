@@ -49,7 +49,7 @@ def webhook(request):
 
         entities = message.entities or message.caption_entities or []
 
-        urls = get_links(text16, entities)
+        urls = get_links(text8, entities)
 
         if len(urls) == 0:
             bot.send_message(chat_id=chat_id, text='No links found.',
