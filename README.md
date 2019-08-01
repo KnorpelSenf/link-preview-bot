@@ -22,7 +22,7 @@ The code acts as a Google Cloud Function.
 1) Store the bot token in an environment variable called `BOT_TOKEN`.
 1) Remember to set the webhook at api.telegram.org to your Cloud Function's URL.
 
-## I don't understand X
+## I don't understand X and Y isn't working either
 Sorry, I hacked this in (more or less) one afternoon.
 Contact me on [Telegram](t.me/KnorpelSenf) if you cannot figure it out.
 I know that there could be better docs.
