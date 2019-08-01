@@ -8,7 +8,7 @@ def get_links(msg, entities):
         url = None
 
         if type == 'url':
-            url = msg[entity.offset:entity.offset + entity.length].encode('utf-8').decode()
+            url = msg[entity.offset:entity.offset + entity.length]
         elif type == 'text_link':
             url = entity.url
 
