@@ -31,7 +31,7 @@ def webhook(request):
         # Telegram understands UTF-8, so encode text for unicode compatibility
         text8 = text.encode('utf-8').decode()
         # MessageEntity objects refer to UTF-16 for offset and length
-        text16 = text.encode('utf-16').decode('utf-16')
+        text16 = text.encode('utf-16')
 
         if text8 == '/help':
             bot.send_message(chat_id=chat_id,
