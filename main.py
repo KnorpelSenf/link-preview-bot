@@ -16,6 +16,8 @@ def webhook(request):
 
     message = update.message
 
+    print(update, "contains", message)
+
     if message is None:
         return
 
