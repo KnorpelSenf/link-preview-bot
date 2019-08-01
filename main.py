@@ -1,7 +1,7 @@
 # import everything
 import os
 import telegram
-from telebot.mastermind import get_links
+from linkpreviewbot.extractor import get_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
@@ -19,20 +19,28 @@ def webhook(request):
     chat_id = message.chat.id
     msg_id = message.message_id
 
-    # Telegram understands UTF-8, so encode text for unicode compatibility
-    text = update.message.text.encode('utf-8').decode()
+    text = message.text or message.caption or ""
 
-    if text == '/help':
-        bot.send_message(chat_id=chat_id, text=("Send/forward me a message and I will respond "
-                                                "with all URLs contained in it. This way, you "
-                                                "can read see link preview and read instant view "
-                                                "articles even if the original sender disabled "
-                                                "a link preview!"), reply_to_message_id=msg_id)
+    # Telegram understands UTF-8, so encode text for unicode compatibility
+    text8 = text.encode('utf-8').decode()
+    # MessageEntity objects refer to UTF-16 for offset and length
+    text16 = text.encode('utf-16').decode()
+
+    if text8 == '/help':
+        bot.send_message(chat_id=chat_id,
+                         text=("Send or forward me a message and I "
+                               "will respond with all URLs contained "
+                               "in it. I will try to give you the "
+                               "link preview whenever possible. This "
+                               "way, you can even read instant view "
+                               "articles if the original sender "
+                               "disabled this!"),
+                         reply_to_message_id=msg_id)
         return
 
-    entities = message.entities if message.entities is not None else message.caption_entities
+    entities = message.entities or message.caption_entities or []
 
-    urls = get_links(text, entities)  # magic
+    urls = get_links(text16, entities)
 
     if len(urls) == 0:
         bot.send_message(chat_id=chat_id, text='No links found.',
