@@ -6,15 +6,17 @@ def get_links(msg, entities):
     for entity in entities:
         type = entity.type
         url = None
+
         if type == 'url':
             url = entity.url
         elif type == 'text_link':
             url = msg[entity.offset:entity.offset + entity.length]
+
         if url is not None:
             if not re.match('^[A-Za-z]:\\/\\/', url):
                 url = 'http://' + url
             url = remove_mobile(url)
-        urls.append(url)
+            urls.append(url)
     return urls
 
 
