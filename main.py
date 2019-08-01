@@ -21,6 +21,8 @@ def webhook(request):
 
     text = message.text or message.caption or ""
 
+    print(text)
+
     # Telegram understands UTF-8, so encode text for unicode compatibility
     text8 = text.encode('utf-8').decode()
     # MessageEntity objects refer to UTF-16 for offset and length
