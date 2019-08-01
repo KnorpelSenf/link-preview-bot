@@ -22,9 +22,17 @@ def webhook(request):
     # Telegram understands UTF-8, so encode text for unicode compatibility
     text = update.message.text.encode('utf-8').decode()
 
+    if text == '/help':
+        bot.send_message(chat_id=chat_id, text=("Send/forward me a message and I will respond "
+                                                "with all URLs contained in it. This way, you "
+                                                "can read see link preview and read instant view "
+                                                "articles even if the original sender disabled "
+                                                "a link preview!"), reply_to_message_id=msg_id)
+        return
+
     entities = message.entities if message.entities is not None else message.caption_entities
 
-    urls = get_links(text, entities) # magic
+    urls = get_links(text, entities)  # magic
 
     if len(urls) == 0:
         bot.send_message(chat_id=chat_id, text='No links found.',
