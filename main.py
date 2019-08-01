@@ -16,6 +16,8 @@ def webhook(request):
 
     message = update.message
 
+    print(request)
+    print(update)
     print(message)
 
     chat_id = message.chat.id
