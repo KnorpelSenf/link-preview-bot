@@ -8,18 +8,19 @@ def get_links(msg, entities):
         url = None
 
         if type == 'url':
-            url = entity.url
-        elif type == 'text_link':
             url = msg[entity.offset:entity.offset + entity.length]
+        elif type == 'text_link':
+            url = entity.url
 
         if url is not None:
             print(url)
-            if not re.match('^[A-Za-z]+:\\/\\/', url): # ^[a-zA-Z]+:\/\/
+            if not re.match('^[A-Za-z]+:\\/\\/', url):  # ^[a-zA-Z]+:\/\/
                 url = 'http://' + url
             url = remove_mobile(url)
             urls.append(url)
         else:
-            print('url was None and type was', type, 'and we had', len(entities), 'as the number of entities')
+            print('url was None and type was', type, 'and we had',
+                  len(entities), 'as the number of entities')
     return urls
 
 
