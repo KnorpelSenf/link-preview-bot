@@ -13,14 +13,10 @@ def get_links(msg, entities):
             url = entity.url
 
         if url is not None:
-            print(url)
             if not re.match('^[A-Za-z]+:\\/\\/', url):  # ^[a-zA-Z]+:\/\/
                 url = 'http://' + url
             url = remove_mobile(url)
             urls.append(url)
-        else:
-            print('url was None and type was', type, 'and we had',
-                  len(entities), 'as the number of entities')
     return urls
 
 

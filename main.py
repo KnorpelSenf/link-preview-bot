@@ -27,7 +27,7 @@ def webhook(request):
     urls = get_links(text, entities) # magic
 
     if len(urls) == 0:
-        bot.send_message(chat_id=chat_id, text='No URLs found.',
+        bot.send_message(chat_id=chat_id, text='No links found.',
                          reply_to_message_id=msg_id)
     else:
         for url in urls:
