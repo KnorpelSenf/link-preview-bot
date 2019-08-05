@@ -1,4 +1,4 @@
-# link-preview-bot
+# Link Preview Bot
 
 ## What is this
 This is a tiny Teleegram bot ([@linkpreviewbot](t.me/linkpreviewbot)) written in python that sends all links back to you that were found in your (think: forwarded) message.
