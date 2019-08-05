@@ -1,14 +1,23 @@
 import re
 
 
-def get_links(msg, entities):
+def get_links(message):
+    if message.text is not None:
+        entities = message.entities
+        parsing_function = message.parse_entity
+    elif message.caption is not None:
+        entities = message.caption_entities
+        parsing_function = message.parse_caption_entity
+    else:
+        return []
+
     urls = []
     for entity in entities:
         type = entity.type
         url = None
 
         if type == 'url':
-            url = msg[entity.offset:entity.offset + entity.length]
+            url = parsing_function(entity)
         elif type == 'text_link':
             url = entity.url
 
@@ -17,6 +26,7 @@ def get_links(msg, entities):
                 url = 'http://' + url
             url = remove_mobile(url)
             urls.append(url)
+
     return urls
 
 

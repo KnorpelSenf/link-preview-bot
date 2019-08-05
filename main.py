@@ -29,27 +29,18 @@ def webhook(request):
     if text is None:
         bot.send_message(chat_id=chat_id, text='No text in message.',
                          reply_to_message_id=msg_id)
+    elif text == '/help':
+        bot.send_message(chat_id=chat_id,
+                         text=("Send or forward me a message and I "
+                               "will respond with all URLs contained "
+                               "in it. I will try to give you the "
+                               "link preview whenever possible. This "
+                               "way, you can even read instant view "
+                               "articles if the original sender "
+                               "disabled this!"),
+                         reply_to_message_id=msg_id)
     else:
-        # Telegram understands UTF-8, so encode text for unicode compatibility
-        text8 = text.encode('utf-8').decode()
-        # MessageEntity objects refer to UTF-16 for offset and length
-        text16 = text.encode('utf-16')
-
-        if text8 == '/help':
-            bot.send_message(chat_id=chat_id,
-                             text=("Send or forward me a message and I "
-                                   "will respond with all URLs contained "
-                                   "in it. I will try to give you the "
-                                   "link preview whenever possible. This "
-                                   "way, you can even read instant view "
-                                   "articles if the original sender "
-                                   "disabled this!"),
-                             reply_to_message_id=msg_id)
-            return
-
-        entities = message.entities or message.caption_entities or []
-
-        urls = get_links(text8, entities)
+        urls = get_links(message)
 
         if len(urls) == 0:
             bot.send_message(chat_id=chat_id, text='No links found.',
