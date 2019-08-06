@@ -1,7 +1,7 @@
 # Link Preview Bot
 
 ## What is this
-This is a tiny Teleegram bot ([@linkpreviewbot](t.me/linkpreviewbot)) written in python that sends all links back to you that were found in your (think: forwarded) message.
+This is a tiny Teleegram bot ([@linkpreviewbot](https://t.me/linkpreviewbot)) written in python that sends all links back to you that were found in your (think: forwarded) message.
 This is useful if you want to see the link preview or visit the instant view page but the original sender disabled the preview.
 This happens often when subscribing to newsletter bots.
 
