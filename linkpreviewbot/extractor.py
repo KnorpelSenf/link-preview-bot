@@ -1,4 +1,5 @@
-import re
+from re import match
+from requests import Session
 
 
 def get_links(message):
@@ -22,9 +23,12 @@ def get_links(message):
             url = entity.url
 
         if url is not None:
-            if not re.match('^[A-Za-z]+:\\/\\/', url):  # ^[a-zA-Z]+:\/\/
+            if not match('^[A-Za-z]+:\\/\\/', url):  # ^[a-zA-Z]+:\/\/
                 url = 'http://' + url
-            url = remove_mobile(url)
+            url = remove_mobile(url)  # remove 'm.' from url
+            session = Session()
+            session.max_redirects = 100
+            url = session.get(url).url  # follow up to 100 redirects
             urls.append(url)
 
     return urls
