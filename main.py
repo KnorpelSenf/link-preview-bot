@@ -1,7 +1,7 @@
 # import everything
 import os
 import telegram
-from linkpreviewbot.extractor import get_links
+from linkpreviewbot.extractor import get_pretty_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
@@ -38,7 +38,7 @@ def webhook(request):
                                "disabled this!"),
                          reply_to_message_id=msg_id)
     else:
-        urls = get_links(message)
+        urls = get_pretty_links(message)
 
         if len(urls) == 0:
             bot.send_message(chat_id=chat_id, text='No links found.',
@@ -46,4 +46,5 @@ def webhook(request):
         else:
             for url in urls:
                 bot.send_message(chat_id=chat_id, text=url,
-                                 reply_to_message_id=msg_id, disable_web_page_preview=False)
+                                 reply_to_message_id=msg_id,
+                                 disable_web_page_preview=False)
