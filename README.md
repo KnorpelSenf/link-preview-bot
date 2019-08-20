@@ -26,7 +26,7 @@ The code acts as a Google Cloud Function.
 
 1) Make sure you have a bot token from [@BotFather](t.me/botfather).
 1) Create a project in the Google Cloud Console and create a Cloud Function for your bot.
-1) Upload this source code using any of the four options (e. g. from a Google Cloud Source repository).
+1) Upload this source code using any of the four options (e. g. from a Google Cloud Source repository that mirrors this GitHub repository).
 1) Define "webhook" as the main function.
 1) Store the bot token in an environment variable called `BOT_TOKEN`.
 1) Remember to set the webhook at api.telegram.org to your Cloud Function's URL.
