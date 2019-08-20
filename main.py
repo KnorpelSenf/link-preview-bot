@@ -35,6 +35,7 @@ def webhook(request):
             abort_say_no_reply_to_resolve(chat_id, message_id)
             return
         else:
+            message = reply
             resolve = True
 
     # Extract links

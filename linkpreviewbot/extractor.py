@@ -3,8 +3,15 @@ from requests import Session
 
 
 def get_pretty_links(message, resolve=False):
-    urls = [remove_mobile(add_protocol(url)) for url in get_urls(message)]
-    return [resolve_redirect(url) if resolve else url for url in urls]
+    urls = get_urls(message)
+    transformations = [add_protocol, remove_mobile]
+    if resolve:
+        transformations.append(resolve_redirect)
+
+    for t in transformations:
+        urls = list(map(t, urls))
+
+    return urls
 
 
 def get_urls(message):
