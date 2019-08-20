@@ -33,7 +33,7 @@ The code acts as a Google Cloud Function.
 
 ## I don't understand X and Y isn't working either
 
-Sorry, I hacked this in under 24 hours and I no longer bother to work on this.
+Sorry, I hacked these first version of this in under 24 hours and I no longer bother to work on this.
 The bot simply does its job, it's convenient, versatile, stable and even highly scalable due to its Cloud Function nature.
 Contact me on [Telegram](https://t.me/KnorpelSenf) if there is something about the project that you just cannot figure out on your own.
 I know that there could be better docs (as always).
