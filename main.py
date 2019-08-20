@@ -1,6 +1,6 @@
 import os
 import telegram
-from linkpreviewbot.extractor import get_pretty_links, get_pretty_resolved_links
+from linkpreviewbot.extractor import get_pretty_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
