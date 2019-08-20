@@ -5,10 +5,14 @@ from requests import Session
 def get_pretty_links(message):
     urls = get_urls(message)
 
-    for transformation in [add_protocol, remove_mobile, resolve_redirect]:
+    for transformation in [add_protocol, remove_mobile]:
         urls = list(map(transformation, urls))
 
     return urls
+
+
+def get_pretty_resolved_links(message):
+    return list(map(resolve_redirect, get_pretty_links(message)))
 
 
 def get_urls(message):

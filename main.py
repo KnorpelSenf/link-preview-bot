@@ -1,7 +1,7 @@
 # import everything
 import os
 import telegram
-from linkpreviewbot.extractor import get_pretty_links
+from linkpreviewbot.extractor import get_pretty_links, get_pretty_resolved_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
@@ -24,6 +24,8 @@ def webhook(request):
 
     text = message.text or message.caption
 
+    transform_func = None
+
     if text is None:
         bot.send_message(chat_id=chat_id, text='No text in message.',
                          reply_to_message_id=msg_id)
@@ -37,8 +39,20 @@ def webhook(request):
                                "articles if the original sender "
                                "disabled this!"),
                          reply_to_message_id=msg_id)
+    elif text == '/resolve':
+        reply = message.reply_to_message
+        if reply is None:
+            bot.send_message(chat_id=chat_id,
+                             text=("'Reply to a link to follow all of "
+                                   "its redirects!"),
+                             reply_to_message_id=msg_id)
+        else:
+            transform_func = get_pretty_resolved_links
     else:
-        urls = get_pretty_links(message)
+        transform_func = get_pretty_links
+
+    if transform_func is not None:
+        urls = transform_func(message)
 
         if len(urls) == 0:
             bot.send_message(chat_id=chat_id, text='No links found.',
