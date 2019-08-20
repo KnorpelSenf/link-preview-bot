@@ -39,7 +39,13 @@ def webhook(request):
             resolve = True
 
     # Extract links
+    status_message_id = None
+    if resolve:
+        status_message_id = bot.send_message(chat_id=chat_id, text='\N{THINKING FACE}',
+                                             reply_to_message_id=message_id).message_id
     urls = get_pretty_links(message, resolve=resolve)
+    if status_message_id is not None:
+        bot.delete_message(chat_id=chat_id, message_id=status_message_id)
 
     if len(urls) == 0:
         bot.send_message(chat_id=chat_id, text='No links found.',
