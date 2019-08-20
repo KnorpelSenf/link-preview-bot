@@ -37,6 +37,9 @@ def webhook(request):
         else:
             resolve = True
 
+    bot.send_message(
+        chat_id=chat_id, text='Extracting with resolve =' + resolve)
+
     # Extract links
     urls = get_pretty_links(message, resolve=resolve)
 
@@ -66,10 +69,10 @@ def abort_say_help(chat_id, reply_to_message_id):
                            "Reply to a message <i>in this chat</i> "
                            "with /resolve to see where the "
                            "links would redirect you.\n\n"
-                           "<b>The link preview is outdated!</b>"
+                           "<b>The link preview is outdated!</b>\n"
                            "Check out the official @WebpageBot "
                            "to update it.\n\n"
-                           "<b>Where is your source code?</b>\nIt's"
+                           "<b>Where is your source code?</b>\nIt's "
                            "<a href=\"https://github.com/KnorpelSenf/link-preview-bot\">"
                            "on GitHub</a>."),
                      parse_mode='HTML',
