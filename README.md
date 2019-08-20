@@ -6,8 +6,9 @@ This is a tiny Teleegram bot ([@linkpreviewbot](https://t.me/linkpreviewbot)) wr
 It can also follow redirects to resolve shortened links.
 The bot is useful if you want to (see the link preview or) visit the instant view page but the original sender disabled the preview.
 This happens often when subscribing to newsletter bots.
+So now you can subscribe to a news bot that does not send instant view pages and forward all interesting messages to [@linkpreviewbot](https://t.me/linkpreviewbot) to read them there anyway.
 
-Note that instant view pages may circumvent paywalls in some cases, e. g. when the reader is permitted to read only a limited number of articles per week/month.
+Note that instant view pages may circumvent paywalls in some cases, e. g. when the reader is permitted to read only a limited number of articles per day/week/month.
 Consider buying a subscription from your favorite news page if you feel guilty.
 
 ## How do I install it locally
