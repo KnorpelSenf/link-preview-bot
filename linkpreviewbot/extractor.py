@@ -2,17 +2,17 @@ from re import match
 from requests import Session
 
 
-def get_pretty_links(message):
+def get_pretty_links(message, resolve=False):
     urls = get_urls(message)
 
-    for transformation in [add_protocol, remove_mobile]:
-        urls = list(map(transformation, urls))
+    transformations = [add_protocol, remove_mobile]
+    if resolve:
+        transformations.append(resolve_redirect)
+
+    for t in transformations:
+        urls = list(map(t, urls))
 
     return urls
-
-
-def get_pretty_resolved_links(message):
-    return list(map(resolve_redirect, get_pretty_links(message)))
 
 
 def get_urls(message):
@@ -35,8 +35,8 @@ def get_urls(message):
         elif type == 'text_link':
             url = entity.url
 
-    if url is not None:
-        urls.append(url)
+        if url is not None:
+            urls.append(url)
     return urls
 
 
