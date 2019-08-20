@@ -5,10 +5,10 @@ from requests import Session
 def get_pretty_links(message, resolve=False):
     urls = get_urls(message)
 
-    urls = list(map(add_protocol, urls))
-    urls = list(map(remove_mobile, urls))
+    urls.append(list(map(add_protocol, urls)))
+    urls.append(list(map(remove_mobile, urls)))
     if resolve:
-        urls = list(map(resolve_redirect, urls))
+        urls .append(list(map(resolve_redirect, urls)))
 
     return urls
 
