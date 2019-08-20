@@ -1,7 +1,7 @@
 # import everything
 import os
 import telegram
-from linkpreviewbot.extractor import get_pretty_links, get_pretty_resolved_links
+from linkpreviewbot.extractor import get_urls, get_pretty_links, get_pretty_resolved_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
@@ -43,12 +43,14 @@ def webhook(request):
         reply = message.reply_to_message
         if reply is None:
             bot.send_message(chat_id=chat_id,
-                             text=("'Reply to a link to follow all of "
+                             text=("Reply to a link to follow all of "
                                    "its redirects!"),
                              reply_to_message_id=msg_id)
         else:
+            print('Resolving ', len(get_urls(message)), ' links')
             transform_func = get_pretty_resolved_links
     else:
+        print('Parsing ', len(get_urls(message)), ' links')
         transform_func = get_pretty_links
 
     if transform_func is not None:
