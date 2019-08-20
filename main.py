@@ -37,9 +37,6 @@ def webhook(request):
         else:
             resolve = True
 
-    bot.send_message(
-        chat_id=chat_id, text='Extracting with resolve = ' + str(resolve))
-
     # Extract links
     urls = get_pretty_links(message, resolve=resolve)
 
