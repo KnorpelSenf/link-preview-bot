@@ -17,7 +17,7 @@ def abort_say_no_text(context, update):
 
 
 def abort_say_help(context, update):
-    context.bot.send_message(update.effective_chat.id, 'hi')
+    context.bot.send_message(update.effective_chat.id, 'hi', parse_mode='HTML')
     context.bot.send_message(chat_id=update.effective_chat.id,
                      text=("<b>My friend sent me a message "
                            "without link preview!</b>\n"
