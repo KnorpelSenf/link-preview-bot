@@ -1,75 +1,87 @@
+import logging
 import os
 from queue import Queue
 from threading import Thread
 
 from telegram import Bot, Update
-from telegram.ext import Dispatcher, Filters, MessageHandler, CommandHandler
+from telegram.ext import CommandHandler, Dispatcher, Filters, MessageHandler, Updater
 
 from linkpreviewbot.extractor import get_pretty_links
 
 # Make sure you have the bot token set in the environment variable BOT_TOKEN
 bot_token = os.environ['BOT_TOKEN']
+# Set this environment variable to use polling instead of webhooks
+try:
+    is_dev = os.environ['DEVELOPMENT']
+except:
+    is_dev = False
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
 
-def abort_say_no_text(context, update):
+def abort_say_no_text(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text='No text in message.',
-                     reply_to_message_id=update.message.message_id)
+                             reply_to_message_id=update.message.message_id)
 
 
-def abort_say_help(context, update):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
-    context.bot.send_message(chat_id=update.effective_chat.id, text='hi', parse_mode='HTML')
+def abort_say_help(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                     text=("<b>My friend sent me a message "
-                           "without link preview!</b>\n"
-                           "Maybe the original sender disabled "
-                           "the preview. Forward me the message "
-                           "and I will give you all the previews.\n\n"
-                           "<b>I have a shortened link!</b>\n"
-                           "Reply to a message <i>in this chat</i> "
-                           "with /resolve to see where the "
-                           "links would redirect you.\n\n"
-                           "<b>The link preview is outdated!</b>\n"
-                           "Check out the official @WebpageBot "
-                           "to update it.\n\n"
-                           "<b>Where is your source code?</b>\nIt's "
-                           "<a href=\"https://github.com/KnorpelSenf/link-preview-bot\">"
-                           "on GitHub</a>."),
-                     parse_mode='HTML',
-                     disable_web_page_preview=True,  # hehe
-                     reply_to_message_id=update.message.message_id)
+                             text=("<b>My friend sent me a message "
+                                   "without link preview!</b>\n"
+                                   "Maybe the original sender disabled "
+                                   "the preview. Forward me the message "
+                                   "and I will give you all the previews.\n\n"
+                                   "<b>I have a shortened link!</b>\n"
+                                   "Reply to a message <i>in this chat</i> "
+                                   "with /resolve to see where the "
+                                   "links would redirect you.\n\n"
+                                   "<b>The link preview is outdated!</b>\n"
+                                   "Check out the official @WebpageBot "
+                                   "to update it.\n\n"
+                                   "<b>Where is your source code?</b>\nIt's "
+                                   "<a href=\"https://github.com/KnorpelSenf/link-preview-bot\">"
+                                   "on GitHub</a>."),
+                             parse_mode='HTML',
+                             disable_web_page_preview=True,  # hehe
+                             reply_to_message_id=update.message.message_id)
 
 
-def abort_say_no_reply_to_resolve(context, update):
+def abort_say_no_reply_to_resolve(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                     text=("Reply to a message to follow all "
-                           "redirects of the contained links!"),
-                     reply_to_message_id=update.message.message_id)
+                             text=("Reply to a message to follow all "
+                                   "redirects of the contained links!"),
+                             reply_to_message_id=update.message.message_id)
 
 
-# Create bot, update queue and dispatcher instances
-bot = Bot(bot_token)
-update_queue = Queue()
+if is_dev:
+    updater = Updater(token=bot_token, use_context=True)
 
-dispatcher = Dispatcher(bot, update_queue)
+    dispatcher = updater.dispatcher
+else:
+    # Create bot, update queue and dispatcher instances
+    bot = Bot(bot_token)
+    update_queue = Queue()
+
+    dispatcher = Dispatcher(bot, update_queue, use_context=True)
 
 # Register handlers
 dispatcher.add_handler(CommandHandler('help', abort_say_help))
-# dispatcher.add_handler(MessageHandler(~Filters.text, abort_say_no_text))
+dispatcher.add_handler(MessageHandler(~Filters.text, abort_say_no_text))
 
-# Start the thread
-thread = Thread(target=dispatcher.start, name='dispatcher')
-thread.start()
+if is_dev:
+    updater.start_polling()
+else:
+    # Start the thread
+    thread = Thread(target=dispatcher.start, name='dispatcher')
+    thread.start()
+
 
 def webhook(request):
     # Get update object from request
     update = Update.de_json(request.get_json(force=True), bot)
     # Put update object in queue
     update_queue.put(update)
-
-    return
-
-
 
     # # Get message object from update
     # message = update.message
