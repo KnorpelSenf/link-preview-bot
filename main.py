@@ -66,16 +66,16 @@ def handle_link_message(resolve):
         print(urls)
         if status_message_id is not None:
             context.bot.delete_message(chat_id=update.effective_chat.id,
-                               message_id=status_message_id)
+                                       message_id=status_message_id)
 
         if len(urls) == 0:
             context.bot.send_message(chat_id=update.effective_chat.id, text='No links found.',
-                             reply_to_message_id=update.message.message_id)
+                                     reply_to_message_id=update.message.message_id)
         else:
             for url in urls:
                 context.bot.send_message(chat_id=update.effective_chat.id, text=url,
-                                 reply_to_message_id=update.message.message_id,
-                                 disable_web_page_preview=False)
+                                         reply_to_message_id=update.message.message_id,
+                                         disable_web_page_preview=False)
     return handler
 
 
@@ -96,7 +96,8 @@ dispatcher.add_handler(CommandHandler(
     'resolve', handle_link_message(resolve=True), filters=Filters.reply))
 dispatcher.add_handler(CommandHandler(
     'resolve', abort_say_no_reply_to_resolve, filters=~Filters.reply))
-dispatcher.add_handler(MessageHandler(~Filters.text & ~Filters.command, abort_say_no_text))
+dispatcher.add_handler(MessageHandler(
+    ~Filters.text & ~Filters.command, abort_say_no_text))
 dispatcher.add_handler(MessageHandler(Filters.all, handle_link_message(False)))
 
 if is_dev:
@@ -112,47 +113,3 @@ def webhook(request):
     update = Update.de_json(request.get_json(force=True), bot)
     # Put update object in queue
     update_queue.put(update)
-
-    # # Get message object from update
-    # message = update.message
-    # if message is None:
-    #     return
-    # chat_id = message.chat.id
-    # message_id = message.message_id
-    # text = message.text or message.caption
-
-    # resolve = False  # default: do not follow redirects to keep messages short
-
-    # # Check if we need to abort before link extraction
-    # if text is None:  # neither text nor caption in message
-    #     abort_say_no_text(chat_id, message_id)
-    #     return
-    # elif text == '/help':
-    #     abort_say_help(chat_id, message_id)
-    #     return
-    # elif text == '/resolve':  # extract and resolve all links
-    #     reply = message.reply_to_message
-    #     if reply is None:
-    #         abort_say_no_reply_to_resolve(chat_id, message_id)
-    #         return
-    #     else:
-    #         message = reply
-    #         resolve = True
-
-    # # Extract links
-    # status_message_id = None
-    # if resolve:
-    #     status_message_id = bot.send_message(chat_id=chat_id, text='\N{THINKING FACE}',
-    #                                          reply_to_message_id=message_id).message_id
-    # urls = get_pretty_links(message, resolve=resolve)
-    # if status_message_id is not None:
-    #     bot.delete_message(chat_id=chat_id, message_id=status_message_id)
-
-    # if len(urls) == 0:
-    #     bot.send_message(chat_id=chat_id, text='No links found.',
-    #                      reply_to_message_id=message_id)
-    # else:
-    #     for url in urls:
-    #         bot.send_message(chat_id=chat_id, text=url,
-    #                          reply_to_message_id=message_id,
-    #                          disable_web_page_preview=False)
