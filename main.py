@@ -17,6 +17,7 @@ def abort_say_no_text(context, update):
 
 
 def abort_say_help(context, update):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
     context.bot.send_message(chat_id=update.effective_chat.id, text='hi', parse_mode='HTML')
     context.bot.send_message(chat_id=update.effective_chat.id,
                      text=("<b>My friend sent me a message "
@@ -53,8 +54,8 @@ update_queue = Queue()
 dispatcher = Dispatcher(bot, update_queue)
 
 # Register handlers
-dispatcher.add_handler(MessageHandler(~Filters.text, abort_say_no_text))
 dispatcher.add_handler(CommandHandler('help', abort_say_help))
+# dispatcher.add_handler(MessageHandler(~Filters.text, abort_say_no_text))
 
 # Start the thread
 thread = Thread(target=dispatcher.start, name='dispatcher')
