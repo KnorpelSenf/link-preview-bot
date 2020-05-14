@@ -10,6 +10,7 @@ bot = telegram.Bot(token=bot_token)
 
 
 def webhook(request):
+    print(request)
     # Get update object from request
     update = telegram.Update.de_json(request.get_json(force=True), bot)
     # Get message object from update
