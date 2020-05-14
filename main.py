@@ -11,12 +11,12 @@ from linkpreviewbot.extractor import get_pretty_links
 bot_token = os.environ['BOT_TOKEN']
 
 
-def abort_say_no_text(update, context):
+def abort_say_no_text(context, update):
     context.bot.send_message(chat_id=update.effective_chat.id, text='No text in message.',
                      reply_to_message_id=update.message.message_id)
 
 
-def abort_say_help(update, context):
+def abort_say_help(context, update):
     context.bot.send_message(chat_id=update.effective_chat.id,
                      text=("<b>My friend sent me a message "
                            "without link preview!</b>\n"
@@ -38,7 +38,7 @@ def abort_say_help(update, context):
                      reply_to_message_id=update.message.message_id)
 
 
-def abort_say_no_reply_to_resolve(update, context):
+def abort_say_no_reply_to_resolve(context, update):
     context.bot.send_message(chat_id=update.effective_chat.id,
                      text=("Reply to a message to follow all "
                            "redirects of the contained links!"),
