@@ -16,9 +16,10 @@ Consider buying a subscription from your favorite news page if you feel guilty.
 Make sure you have Python 3.7 installed.
 (You might want to use a virtual environment.)
 
-`git clone git@github.com:KnorpelSenf/link-preview-bot.git`
-
-`pip install -r requirements.txt`
+```bash
+git clone git@github.com:KnorpelSenf/link-preview-bot.git
+pip install -r requirements.txt
+```
 
 ## How do I deploy it on Google
 
