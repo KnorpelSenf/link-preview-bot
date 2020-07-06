@@ -2,7 +2,7 @@
 
 ## What is this
 
-This is a tiny Teleegram bot ([@linkpreviewbot](https://t.me/linkpreviewbot)) written in python that sends all links back to you that were found in your (think: forwarded) message.
+This is a tiny Telegram bot ([@linkpreviewbot](https://t.me/linkpreviewbot)) written in python that sends all links back to you that were found in your (think: forwarded) message.
 It can also follow redirects to resolve shortened links.
 The bot is useful if you want to (see the link preview or) visit the instant view page but the original sender disabled the preview.
 This happens often when subscribing to newsletter bots.
