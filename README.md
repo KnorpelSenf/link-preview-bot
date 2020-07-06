@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 The code acts as a Google Cloud Function.
 
-1) Make sure you have a bot token from [@BotFather](t.me/botfather).
+1) Make sure you have a bot token from [@BotFather](https://t.me/botfather).
 1) Create a project in the Google Cloud Console and create a Cloud Function for your bot.
 1) Upload this source code using any of the four options (e.g. from a Google Cloud Source repository that mirrors this GitHub repository).
 1) Define "webhook" as the main function.
