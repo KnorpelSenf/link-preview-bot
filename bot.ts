@@ -50,9 +50,7 @@ bot.command("resolve").branch(
     ),
 );
 bot.on("channel_post:text", async (ctx) => {
-  const tempText = `Adding link previews (${
-    ctx.msg.text.substring(0, 4000)
-  }) ...`;
+  const tempText = `Adding link preview: ${ctx.msg.text.substring(0, 4000)}`;
   await ctx.editMessageText(tempText).catch(() => {/* ignore failed edit */});
   await ctx.editMessageText(ctx.msg.text, {
     entities: ctx.msg.entities,
