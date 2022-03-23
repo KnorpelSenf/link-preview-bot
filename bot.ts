@@ -59,7 +59,7 @@ bot.on("channel_post:text", async (ctx) => {
     disable_web_page_preview: false,
   }).catch(() => {/* ignore failed edit */});
 });
-bot.on(["channel_post", "edited_channel_post"], () => {
+bot.on(["channel_post", "edited_channel_post", "my_chat_member"], () => {
   // ignore other channel post updates
 });
 bot.on(["::url", "::text_link"], handleLinks());
