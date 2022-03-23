@@ -49,6 +49,19 @@ bot.command("resolve").branch(
       "Reply to a message to follow all redirects of the contained links!",
     ),
 );
+bot.on("channel_post:text", async (ctx) => {
+  const tempText = `Adding link previews (${
+    ctx.msg.text.substring(0, 4000)
+  }) ...`;
+  await ctx.editMessageText(tempText).catch(() => {/* ignore failed edit */});
+  await ctx.editMessageText(ctx.msg.text, {
+    entities: ctx.msg.entities,
+    disable_web_page_preview: false,
+  }).catch(() => {/* ignore failed edit */});
+});
+bot.on(["channel_post", "edited_channel_post"], () => {
+  // ignore other channel post updates
+});
 bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
 bot.use((ctx) => ctx.reply("No text in message."));
