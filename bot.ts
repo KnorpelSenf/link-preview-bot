@@ -64,6 +64,118 @@ bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
 bot.use((ctx) => ctx.reply("No text in message."));
 
+bot.on("callback_query", async ctx => {
+  if (ctx.callbackQuery.message.date === 0) {
+    return await ctx.answerCallbackQuery({
+      text: "// outdated button"
+    });
+  }
+  await ctx.answerCallbackQuery();  // answer to avoid spinnier
+
+  const data = ctx.callbackQuery.data;
+
+  let link_preview_options = {
+    is_disabled: false,
+    url: ctx.callbackQuery.message.text,
+    prefer_small_media: false,
+    prefer_large_media: false,
+    show_above_text: false
+  };
+  let reply_markup = {
+    inline_keyboard: []
+  };
+  let tmp = [];
+
+  const f = data.charAt(0);
+  const tpo = data.substring(1, 4);
+
+
+  if (f === "e") {
+    tmp = [];
+    tmp.push(
+      {
+        text: `${tpo === "plm" ? '✅' : '❌'} Prefer large media`,
+        callback_data: "dplm"
+      }
+    );
+    tmp.push(
+      {
+        text: `${tpo === "psm" ? '✅' : '❌'} Prefer small media`,
+        callback_data: "dpsm"
+      }
+    );
+    reply_markup.inline_keyboard.push(tmp);
+    tmp = [];
+    tmp.push(
+      {
+        text: `${tpo === "sat" ? '✅' : '❌'} Show above text`,
+        callback_data: "dsat"
+      }
+    );
+    reply_markup.inline_keyboard.push(tmp);
+    tmp = [];
+
+    if (tpo === "plm") {
+      link_preview_options.prefer_large_media = true;
+    }
+    else if (tpo === "psm") {
+      link_preview_options.prefer_small_media = true;
+    }
+    else if (tpo === "sat") {
+      link_preview_options.show_above_text = true;
+    }
+  }
+
+  else if (f === "d") {
+    tmp = [];
+    tmp.push(
+      {
+        text: `${tpo === "plm" ? '❌' : '✅'} Prefer large media`,
+        callback_data: "eplm"
+      }
+    );
+    tmp.push(
+      {
+        text: `${tpo === "psm" ? '❌' : '✅'} Prefer small media`,
+        callback_data: "epsm"
+      }
+    );
+    reply_markup.inline_keyboard.push(tmp);
+    tmp = [];
+    tmp.push(
+      {
+        text: `${tpo === "sat" ? '❌' : '✅'} Show above text`,
+        callback_data: "esat"
+      }
+    );
+    reply_markup.inline_keyboard.push(tmp);
+    tmp = [];
+
+    if (tpo === "plm") {
+      link_preview_options.prefer_large_media = false;
+    }
+    else if (tpo === "psm") {
+      link_preview_options.prefer_small_media = false;
+    }
+    else if (tpo === "sat") {
+      link_preview_options.show_above_text = false;
+    }
+  }
+
+  if (reply_markup.inline_keyboard.length === 0) {
+    throw new Error("Should not happen (2)");
+  }
+
+  await ctx.callbackQuery.message.editMessageText(
+    link_preview_options.url,
+    {
+      link_preview_options: link_preview_options,
+      reply_markup: reply_markup
+    }
+  );
+
+});
+
 function handleLinks(options?: { resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
     let msg: Message = ctx.msg;
@@ -99,8 +211,37 @@ function handleLinks(options?: { resolve?: boolean }) {
     }
     for (const url of urls) {
       await ctx.reply(url, {
-        reply_to_message_id: ctx.msg.message_id,
-        allow_sending_without_reply: true,
+        reply_parameters: {
+          message_id: ctx.msg.message_id,
+          allow_sending_without_reply: true,
+        },
+        link_preview_options: {
+          is_disabled: false,
+          url: url,
+          prefer_small_media: false,
+          prefer_large_media: false,
+          show_above_text: false
+        },
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "❌ Prefer large media",
+                callback_data: "eplm"
+              },
+              {
+                text: "❌ Prefer small media",
+                callback_data: "epsm"
+              }
+            ],
+            [
+              {
+                text: "❌ Show above text",
+                callback_data: "esat"
+              }
+            ]
+          ]
+        }
       });
     }
   };
