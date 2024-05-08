@@ -1,12 +1,12 @@
-import { serve } from "https://deno.land/std@0.130.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import {
   Bot,
   Context,
   Filter,
   NextFunction,
   webhookCallback,
-} from "https://deno.land/x/grammy@v1.7.0/mod.ts";
-import { type Message } from "https://cdn.skypack.dev/@grammyjs/types@v2.6.0?dts";
+} from "https://deno.land/x/grammy@v1.22.4/mod.ts";
+import { type Message } from "https://cdn.skypack.dev/@grammyjs/types@v3.6.2?dts";
 import {
   EmojiFlavor,
   emojiParser,
