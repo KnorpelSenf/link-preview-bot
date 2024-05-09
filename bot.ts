@@ -3,6 +3,7 @@ import {
   Bot,
   Context,
   Filter,
+  InlineKeyboard,
   NextFunction,
   webhookCallback,
 } from "https://deno.land/x/grammy@v1.22.4/mod.ts";
@@ -81,40 +82,32 @@ bot.on("callback_query", async ctx => {
     prefer_large_media: false,
     show_above_text: false
   };
-  let reply_markup = {
-    inline_keyboard: []
-  };
-  let tmp = [];
-
+  const ikb = new InlineKeyboard();
+  
   const f = data.charAt(0);
   const tpo = data.substring(1, 4);
 
-
   if (f === "e") {
-    tmp = [];
-    tmp.push(
+    ikb.add(
       {
         text: `${tpo === "plm" ? '✅' : '❌'} Prefer large media`,
         callback_data: "dplm"
       }
     );
-    tmp.push(
+    ikb.add(
       {
         text: `${tpo === "psm" ? '✅' : '❌'} Prefer small media`,
         callback_data: "dpsm"
       }
     );
-    reply_markup.inline_keyboard.push(tmp);
-    tmp = [];
-    tmp.push(
+    ikb.row();
+    ikb.add(
       {
         text: `${tpo === "sat" ? '✅' : '❌'} Show above text`,
         callback_data: "dsat"
       }
     );
-    reply_markup.inline_keyboard.push(tmp);
-    tmp = [];
-
+    
     if (tpo === "plm") {
       link_preview_options.prefer_large_media = true;
     }
@@ -127,29 +120,25 @@ bot.on("callback_query", async ctx => {
   }
 
   else if (f === "d") {
-    tmp = [];
-    tmp.push(
+    ikb.add(
       {
         text: `${tpo === "plm" ? '❌' : '✅'} Prefer large media`,
         callback_data: "eplm"
       }
     );
-    tmp.push(
+    ikb.add(
       {
         text: `${tpo === "psm" ? '❌' : '✅'} Prefer small media`,
         callback_data: "epsm"
       }
     );
-    reply_markup.inline_keyboard.push(tmp);
-    tmp = [];
-    tmp.push(
+    ikb.row();
+    ikb.add(
       {
         text: `${tpo === "sat" ? '❌' : '✅'} Show above text`,
         callback_data: "esat"
       }
     );
-    reply_markup.inline_keyboard.push(tmp);
-    tmp = [];
 
     if (tpo === "plm") {
       link_preview_options.prefer_large_media = false;
@@ -162,15 +151,11 @@ bot.on("callback_query", async ctx => {
     }
   }
 
-  if (reply_markup.inline_keyboard.length === 0) {
-    throw new Error("Should not happen (2)");
-  }
-
   await ctx.callbackQuery.message.editMessageText(
     link_preview_options.url,
     {
       link_preview_options: link_preview_options,
-      reply_markup: reply_markup
+      reply_markup: ikb
     }
   );
 
