@@ -1,4 +1,4 @@
-import { type MessageEntity } from "https://cdn.skypack.dev/@grammyjs/types@v2.6.0?dts";
+import { type MessageEntity } from "https://deno.land/x/grammy@v1.23.0/types.ts";
 
 export async function getPrettyLinks(
   text: string,
