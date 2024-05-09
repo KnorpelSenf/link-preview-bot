@@ -37,6 +37,9 @@ Maybe the original sender disabled the preview. Forward me the message and I wil
 <b>I have a shortened link!</b>
 Reply to a message in this chat with /resolve to see where the links would redirect you.
 
+<b>I want to create link preview without visible link in text!</b>
+Reply to a text message with /generate <i>URL</i> to add a link preview to the message.
+
 <b>The link preview is outdated!</b>
 Check out the official @WebpageBot to update it.
 
@@ -83,6 +86,27 @@ bot.callbackQuery(/^resolve:.*/, async (ctx) => {
     ),
   ]);
 });
+bot.command("generate", async (ctx) => {
+  const url_entity = ctx.msg.entities.find((e) => e.type === "url");
+  if (!url_entity) {
+    await ctx.reply("Please provide a URL.");
+    return;
+  }
+  const url = ctx.msg.text.substring(url_entity.offset, url_entity.offset + url_entity.length);
+  if (ctx.msg.reply_to_message === undefined) {
+    await ctx.reply("Please reply to the message to add link preview.");
+    return;
+  }
+  const { text, entities } = ctx.msg.reply_to_message;
+  if (text === undefined) {
+    await ctx.reply("Please reply to a text message.");
+    return;
+  }
+  await ctx.reply(text, {
+    entities,
+    ...generateReplyMarkup(url, "small-below-resolved"), // disable resolve button
+  });
+});
 bot.on("callback_query:data", async (ctx) => {
   if (
     ctx.callbackQuery.message?.text === undefined ||
@@ -91,15 +115,21 @@ bot.on("callback_query:data", async (ctx) => {
     await ctx.answerCallbackQuery("outdated button");
     return;
   }
+  if (ctx.callbackQuery.message.link_preview_options?.url === undefined) {
+    await ctx.answerCallbackQuery("cannot create link preview");
+    return;
+  }
 
   await Promise.all([
     ctx.answerCallbackQuery(),
     ctx.editMessageText(
-      ctx.callbackQuery.message.text,
-      generateReplyMarkup(
-        ctx.callbackQuery.message.text,
+      ctx.callbackQuery.message.text, {
+      entities: ctx.callbackQuery.message.entities,
+      ...generateReplyMarkup(
+        ctx.callbackQuery.message.link_preview_options?.url,
         ctx.callbackQuery.data,
       ),
+    },
     ),
   ]);
 });
