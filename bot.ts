@@ -55,6 +55,31 @@ bot.command("resolve").branch(
       "Reply to a message to follow all redirects of the contained links!",
     ),
 );
+bot.callbackQuery(/^resolve:.*/, async (ctx) => {
+  if (
+    ctx.callbackQuery.message?.text === undefined ||
+    ctx.callbackQuery.message.date === 0
+  ) {
+    await ctx.answerCallbackQuery("outdated button");
+    return;
+  }
+
+  const resolved = await getPrettyLinks(
+    ctx.callbackQuery.message.text,
+    ctx.entities(),
+    /* resolve: */ true,
+  );
+  await Promise.all([
+    ctx.answerCallbackQuery(),
+    ctx.editMessageText(
+      resolved[0],
+      generateReplyMarkup(
+        ctx.callbackQuery.message.text,
+        ctx.callbackQuery.data.substring("resolve:".length),
+      ),
+    ),
+  ]);
+});
 bot.on("callback_query:data", async (ctx) => {
   if (
     ctx.callbackQuery.message?.text === undefined ||
@@ -90,30 +115,39 @@ bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
 bot.use((ctx) => ctx.reply("No text in message."));
 
-function generateReplyMarkup(url: string, data: string = "none-below") {
-  const [size, position] = data.split("-") as [
+function generateReplyMarkup(
+  url: string,
+  data: string = "small-below-raw",
+) {
+  const [size, pos, res] = data.split("-") as [
     "large" | "small" | "none",
     "above" | "below",
+    "raw" | "resolved",
   ];
   const opts: LinkPreviewOptions = {
     is_disabled: false,
     url,
     prefer_small_media: size === "small",
     prefer_large_media: size === "large",
-    show_above_text: position === "above",
+    show_above_text: pos === "above",
   };
+  const resolved = res === "resolved";
 
   const menu = new InlineKeyboard()
     .text(
       `${opts.prefer_large_media ? "✅" : "❌"} Prefer large media`,
-      `${opts.prefer_large_media ? "none" : "large"}-${position}`,
+      `${opts.prefer_large_media ? "none" : "large"}-${pos}-${res}`,
     ).text(
       `${opts.prefer_small_media ? "✅" : "❌"} Prefer small media`,
-      `${opts.prefer_small_media ? "none" : "small"}-${position}`,
+      `${opts.prefer_small_media ? "none" : "small"}-${pos}-${res}`,
     ).row().text(
       `${opts.show_above_text ? "✅" : "❌"} Show above text`,
-      `${size}-${opts.show_above_text ? "below" : "above"}`,
+      `${size}-${opts.show_above_text ? "below" : "above"}-${res}`,
     );
+  if (!resolved) {
+    // command string
+    menu.row().text("Resolve", `resolve:${size}-${pos}-resolved`);
+  }
 
   return { link_preview_options: opts, reply_markup: menu };
 }
@@ -148,6 +182,7 @@ function handleLinks(options?: { resolve?: boolean }) {
         ctx.msg.chat.id,
         statusMessage?.message_id,
         first,
+        generateReplyMarkup(first),
       );
     }
     for (const url of urls) {
