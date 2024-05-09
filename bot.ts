@@ -65,8 +65,6 @@ bot.on(["channel_post", "edited_channel_post", "my_chat_member"], () => {
 });
 bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
-bot.use((ctx) => ctx.reply("No text in message."));
-
 bot.on("callback_query:data", async (ctx) => {
   if ((ctx.callbackQuery.message?.date ?? 0) === 0) {
     return await ctx.answerCallbackQuery("outdated button");
@@ -120,6 +118,7 @@ bot.on("callback_query:data", async (ctx) => {
     { link_preview_options: link_preview_options, reply_markup: ikb },
   );
 });
+bot.use((ctx) => ctx.reply("No text in message."));
 
 function handleLinks(options?: { resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
@@ -170,6 +169,7 @@ function handleLinks(options?: { resolve?: boolean }) {
         reply_markup: new InlineKeyboard()
           .text("❌ Prefer large media", "eplm")
           .text("❌ Prefer small media", "epsm")
+          .row()
           .text("❌ Show above text", "esat"),
       });
     }
