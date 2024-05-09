@@ -149,7 +149,7 @@ function generateReplyMarkup(
     );
   if (!resolved) {
     // command string
-    menu.row().text("Resolve", `resolve:${size}-${pos}-resolved`);
+    menu.row().text("Resolve redirects", `resolve:${size}-${pos}-resolved`);
   }
 
   return { link_preview_options: opts, reply_markup: menu };
