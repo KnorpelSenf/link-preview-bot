@@ -24,6 +24,10 @@ if (!token) throw new Error("Missing BOT_TOKEN env var!");
 const bot = new Bot<MyContext>(token);
 bot.use(emojiParser());
 
+bot.chatType("private").command(
+  "start",
+  (ctx) => ctx.reply("Hi! Just send me a link."),
+);
 bot.command(
   "help",
   async (ctx) => {
