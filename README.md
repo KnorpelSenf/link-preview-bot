@@ -24,6 +24,7 @@ Make sure you have [Deno](https://deno.land/) installed.
 ```bash
 git clone git@github.com:KnorpelSenf/link-preview-bot.git
 export BOT_TOKEN=your-bot-token
+export DEBUG='*' # this will switch to polling+debug logs
 deno run --allow-net --allow-env bot.ts
 ```
 
