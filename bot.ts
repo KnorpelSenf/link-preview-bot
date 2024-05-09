@@ -1,16 +1,16 @@
-import { serve } from "https://deno.land/std@0.130.0/http/server.ts";
 import {
   Bot,
   Context,
   Filter,
+  InlineKeyboard,
   NextFunction,
   webhookCallback,
-} from "https://deno.land/x/grammy@v1.7.0/mod.ts";
-import { type Message } from "https://cdn.skypack.dev/@grammyjs/types@v2.6.0?dts";
+} from "https://deno.land/x/grammy@v1.23.0/mod.ts";
+import { type Message } from "https://deno.land/x/grammy@v1.23.0/types.ts";
 import {
   EmojiFlavor,
   emojiParser,
-} from "https://deno.land/x/grammy_emoji@v1.0.0/mod.ts";
+} from "https://deno.land/x/grammy_emoji@v1.2.0/mod.ts";
 import { getPrettyLinks } from "./linkpreviewbot/extract.ts";
 
 type MyContext = Context & EmojiFlavor;
@@ -36,7 +36,10 @@ Check out the official @WebpageBot to update it.
 
 <b>Where is your source code?</b>
 It's <a href="https://github.com/KnorpelSenf/link-preview-bot">on GitHub</a>.`,
-      { parse_mode: "HTML", disable_web_page_preview: true /* hehe */ },
+      {
+        parse_mode: "HTML",
+        link_preview_options: { is_disabled: true }, // hehe
+      },
     );
   },
 );
@@ -54,7 +57,7 @@ bot.on("channel_post:text", async (ctx) => {
   await ctx.editMessageText(tempText).catch(() => {/* ignore failed edit */});
   await ctx.editMessageText(ctx.msg.text, {
     entities: ctx.msg.entities,
-    disable_web_page_preview: false,
+    link_preview_options: { is_disabled: true }, // hehe
   }).catch(() => {/* ignore failed edit */});
 });
 bot.on(["channel_post", "edited_channel_post", "my_chat_member"], () => {
@@ -63,6 +66,60 @@ bot.on(["channel_post", "edited_channel_post", "my_chat_member"], () => {
 bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
 bot.use((ctx) => ctx.reply("No text in message."));
+
+bot.on("callback_query:data", async (ctx) => {
+  if ((ctx.callbackQuery.message?.date ?? 0) === 0) {
+    return await ctx.answerCallbackQuery("outdated button");
+  }
+  await ctx.answerCallbackQuery();
+
+  const data = ctx.callbackQuery.data;
+
+  const link_preview_options = {
+    is_disabled: false,
+    url: ctx.callbackQuery.message?.text ?? "",
+    prefer_small_media: false,
+    prefer_large_media: false,
+    show_above_text: false,
+  };
+  const ikb = new InlineKeyboard();
+
+  const f = data.charAt(0);
+  const tpo = data.substring(1, 4);
+
+  if (f === "e") {
+    ikb.text(`${tpo === "plm" ? "✅" : "❌"} Prefer large media`, "dplm")
+      .text(`${tpo === "psm" ? "✅" : "❌"} Prefer small media`, "dpsm")
+      .row()
+      .text(`${tpo === "sat" ? "✅" : "❌"} Show above text`, "dsat");
+
+    if (tpo === "plm") {
+      link_preview_options.prefer_large_media = true;
+    } else if (tpo === "psm") {
+      link_preview_options.prefer_small_media = true;
+    } else if (tpo === "sat") {
+      link_preview_options.show_above_text = true;
+    }
+  } else if (f === "d") {
+    ikb.text(`${tpo === "plm" ? "❌" : "✅"} Prefer large media`, "eplm")
+      .text(`${tpo === "psm" ? "❌" : "✅"} Prefer small media`, "epsm")
+      .row()
+      .text(`${tpo === "sat" ? "❌" : "✅"} Show above text`, "esat");
+
+    if (tpo === "plm") {
+      link_preview_options.prefer_large_media = false;
+    } else if (tpo === "psm") {
+      link_preview_options.prefer_small_media = false;
+    } else if (tpo === "sat") {
+      link_preview_options.show_above_text = false;
+    }
+  }
+
+  await ctx.editMessageText(
+    link_preview_options.url,
+    { link_preview_options: link_preview_options, reply_markup: ikb },
+  );
+});
 
 function handleLinks(options?: { resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
@@ -99,12 +156,25 @@ function handleLinks(options?: { resolve?: boolean }) {
     }
     for (const url of urls) {
       await ctx.reply(url, {
-        reply_to_message_id: ctx.msg.message_id,
-        allow_sending_without_reply: true,
+        reply_parameters: {
+          message_id: ctx.msg.message_id,
+          allow_sending_without_reply: true,
+        },
+        link_preview_options: {
+          is_disabled: false,
+          url: url,
+          prefer_small_media: false,
+          prefer_large_media: false,
+          show_above_text: false,
+        },
+        reply_markup: new InlineKeyboard()
+          .text("❌ Prefer large media", "eplm")
+          .text("❌ Prefer small media", "epsm")
+          .text("❌ Show above text", "esat"),
       });
     }
   };
 }
 
-if (Deno.env.get("DEVELOPMENT")) bot.start();
-else serve(webhookCallback(bot, "std/http"));
+if (Deno.env.get("DEBUG")) bot.start();
+else Deno.serve(webhookCallback(bot, "std/http"));
