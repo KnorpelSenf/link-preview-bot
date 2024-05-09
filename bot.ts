@@ -6,7 +6,10 @@ import {
   NextFunction,
   webhookCallback,
 } from "https://deno.land/x/grammy@v1.23.0/mod.ts";
-import { type Message } from "https://deno.land/x/grammy@v1.23.0/types.ts";
+import {
+  type LinkPreviewOptions,
+  type Message,
+} from "https://deno.land/x/grammy@v1.23.0/types.ts";
 import {
   EmojiFlavor,
   emojiParser,
@@ -52,6 +55,26 @@ bot.command("resolve").branch(
       "Reply to a message to follow all redirects of the contained links!",
     ),
 );
+bot.on("callback_query:data", async (ctx) => {
+  if (
+    ctx.callbackQuery.message?.text === undefined ||
+    ctx.callbackQuery.message.date === 0
+  ) {
+    await ctx.answerCallbackQuery("outdated button");
+    return;
+  }
+
+  await Promise.all([
+    ctx.answerCallbackQuery(),
+    ctx.editMessageText(
+      ctx.callbackQuery.message.text,
+      generateReplyMarkup(
+        ctx.callbackQuery.message.text,
+        ctx.callbackQuery.data,
+      ),
+    ),
+  ]);
+});
 bot.on("channel_post:text", async (ctx) => {
   const tempText = `Adding link preview: ${ctx.msg.text.substring(0, 4000)}`;
   await ctx.editMessageText(tempText).catch(() => {/* ignore failed edit */});
@@ -67,60 +90,33 @@ bot.on(["::url", "::text_link"], handleLinks());
 bot.on([":text", ":caption"], (ctx) => ctx.reply("No links found."));
 bot.use((ctx) => ctx.reply("No text in message."));
 
-bot.on("callback_query:data", async (ctx) => {
-  if ((ctx.callbackQuery.message?.date ?? 0) === 0) {
-    return await ctx.answerCallbackQuery("outdated button");
-  }
-  await ctx.answerCallbackQuery();
-
-  const data = ctx.callbackQuery.data;
-
-  const link_preview_options = {
+function generateReplyMarkup(url: string, data: string = "none-below") {
+  const [size, position] = data.split("-") as [
+    "large" | "small" | "none",
+    "above" | "below",
+  ];
+  const opts: LinkPreviewOptions = {
     is_disabled: false,
-    url: ctx.callbackQuery.message?.text ?? "",
-    prefer_small_media: false,
-    prefer_large_media: false,
-    show_above_text: false,
+    url,
+    prefer_small_media: size === "small",
+    prefer_large_media: size === "large",
+    show_above_text: position === "above",
   };
-  const ikb = new InlineKeyboard();
 
-  const f = data.charAt(0);
-  const tpo = data.substring(1, 4);
+  const menu = new InlineKeyboard()
+    .text(
+      `${opts.prefer_large_media ? "✅" : "❌"} Prefer large media`,
+      `${opts.prefer_large_media ? "none" : "large"}-${position}`,
+    ).text(
+      `${opts.prefer_small_media ? "✅" : "❌"} Prefer small media`,
+      `${opts.prefer_small_media ? "none" : "small"}-${position}`,
+    ).row().text(
+      `${opts.show_above_text ? "✅" : "❌"} Show above text`,
+      `${size}-${opts.show_above_text ? "below" : "above"}`,
+    );
 
-  if (f === "e") {
-    ikb.text(`${tpo === "plm" ? "✅" : "❌"} Prefer large media`, "dplm")
-      .text(`${tpo === "psm" ? "✅" : "❌"} Prefer small media`, "dpsm")
-      .row()
-      .text(`${tpo === "sat" ? "✅" : "❌"} Show above text`, "dsat");
-
-    if (tpo === "plm") {
-      link_preview_options.prefer_large_media = true;
-    } else if (tpo === "psm") {
-      link_preview_options.prefer_small_media = true;
-    } else if (tpo === "sat") {
-      link_preview_options.show_above_text = true;
-    }
-  } else if (f === "d") {
-    ikb.text(`${tpo === "plm" ? "❌" : "✅"} Prefer large media`, "eplm")
-      .text(`${tpo === "psm" ? "❌" : "✅"} Prefer small media`, "epsm")
-      .row()
-      .text(`${tpo === "sat" ? "❌" : "✅"} Show above text`, "esat");
-
-    if (tpo === "plm") {
-      link_preview_options.prefer_large_media = false;
-    } else if (tpo === "psm") {
-      link_preview_options.prefer_small_media = false;
-    } else if (tpo === "sat") {
-      link_preview_options.show_above_text = false;
-    }
-  }
-
-  await ctx.editMessageText(
-    link_preview_options.url,
-    { link_preview_options: link_preview_options, reply_markup: ikb },
-  );
-});
-
+  return { link_preview_options: opts, reply_markup: menu };
+}
 function handleLinks(options?: { resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
     let msg: Message = ctx.msg;
@@ -156,21 +152,11 @@ function handleLinks(options?: { resolve?: boolean }) {
     }
     for (const url of urls) {
       await ctx.reply(url, {
+        ...generateReplyMarkup(url),
         reply_parameters: {
           message_id: ctx.msg.message_id,
           allow_sending_without_reply: true,
         },
-        link_preview_options: {
-          is_disabled: false,
-          url: url,
-          prefer_small_media: false,
-          prefer_large_media: false,
-          show_above_text: false,
-        },
-        reply_markup: new InlineKeyboard()
-          .text("❌ Prefer large media", "eplm")
-          .text("❌ Prefer small media", "epsm")
-          .text("❌ Show above text", "esat"),
       });
     }
   };
