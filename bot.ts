@@ -6,7 +6,7 @@ import {
   NextFunction,
   webhookCallback,
 } from "https://deno.land/x/grammy@v1.22.4/mod.ts";
-import { type Message } from "https://cdn.skypack.dev/@grammyjs/types@v3.6.2?dts";
+import { type Message } from "https://demo.land/x/grammy@v1.22.4/types.ts";
 import {
   EmojiFlavor,
   emojiParser,
