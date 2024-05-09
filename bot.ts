@@ -14,6 +14,7 @@ import {
   EmojiFlavor,
   emojiParser,
 } from "https://deno.land/x/grammy_emoji@v1.2.0/mod.ts";
+import { autoRetry } from "https://deno.land/x/grammy_auto_retry@v2.0.1/mod.ts";
 import { getPrettyLinks } from "./linkpreviewbot/extract.ts";
 
 type MyContext = Context & EmojiFlavor;
@@ -22,6 +23,7 @@ const token = Deno.env.get("BOT_TOKEN");
 if (!token) throw new Error("Missing BOT_TOKEN env var!");
 
 const bot = new Bot<MyContext>(token);
+bot.api.config.use(autoRetry());
 bot.use(emojiParser());
 
 bot.command("start", (ctx) => ctx.reply("Hi! Just send me a link. /help"));
