@@ -87,12 +87,12 @@ bot.callbackQuery(/^resolve:.*/, async (ctx) => {
   ]);
 });
 bot.command("generate", async (ctx) => {
-  const url_entity = ctx.msg.entities.find((e) => e.type === "url");
-  if (!url_entity) {
+  const url_entity = ctx.entities("url");
+  if (url_entity.length === 0) {
     await ctx.reply("Please provide a URL.");
     return;
   }
-  const url = ctx.msg.text.substring(url_entity.offset, url_entity.offset + url_entity.length);
+  const url = url_entity[0].text;
   if (ctx.msg.reply_to_message === undefined) {
     await ctx.reply("Please reply to the message to add link preview.");
     return;
