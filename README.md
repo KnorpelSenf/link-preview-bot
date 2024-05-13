@@ -17,6 +17,10 @@ the reader is permitted to read only a limited number of articles per
 day/week/month. Consider buying a subscription from your favorite news page if
 you feel guilty.
 
+It can also generate messages with link previews for hidden links. This works
+because Telegram supports sending messages with link previews to websites that
+are not contained in the message text. Check out the `/generate URL` command.
+
 ## How do I run it locally
 
 Make sure you have [Deno](https://deno.land/) installed.
