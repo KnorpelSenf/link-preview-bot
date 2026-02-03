@@ -238,7 +238,7 @@ function handleLinks(options?: { resolve?: boolean }) {
       const first = urls.shift() ?? "";
       await ctx.api.editMessageText(
         ctx.msg.chat.id,
-        statusMessage?.message_id,
+        statusMessage.message_id,
         first,
         generateReplyMarkup(first),
       );
