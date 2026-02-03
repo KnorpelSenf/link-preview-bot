@@ -105,7 +105,7 @@ bot.callbackQuery(/^resolve:/, async (ctx) => {
     ctx.editMessageText(
       resolved[0],
       generateReplyMarkup(
-        ctx.callbackQuery.message.text,
+        resolved[0],
         ctx.callbackQuery.data.substring("resolve:".length),
       ),
     ),
