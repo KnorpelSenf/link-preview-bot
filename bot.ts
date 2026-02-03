@@ -5,17 +5,16 @@ import {
   InlineKeyboard,
   NextFunction,
   webhookCallback,
-} from "https://deno.land/x/grammy@v1.23.0/mod.ts";
+} from "https://deno.land/x/grammy@v1.39.3/mod.ts";
 import {
   type LinkPreviewOptions,
   type Message,
-} from "https://deno.land/x/grammy@v1.23.0/types.ts";
+} from "https://deno.land/x/grammy@v1.39.3/types.ts";
 import {
   EmojiFlavor,
   emojiParser,
 } from "https://deno.land/x/grammy_emoji@v1.2.0/mod.ts";
-import { autoRetry } from "https://deno.land/x/grammy_auto_retry@v2.0.1/mod.ts";
-import { getPrettyLinks } from "./linkpreviewbot/extract.ts";
+import { autoRetry } from "https://deno.land/x/grammy_auto_retry@v2.0.2/mod.ts";
 
 type MyContext = Context & EmojiFlavor;
 
