@@ -1,5 +1,24 @@
 import { type MessageEntity } from "https://deno.land/x/grammy@v1.39.3/types.ts";
 
+export function hasParams(url: string) {
+  try {
+    return !!new URL(url).search;
+  } catch {
+    return false;
+  }
+}
+export function stripParams(text: string, entities: MessageEntity[]) {
+  return getUrls(text, entities).map((url) => {
+    if (!hasParams(url)) return url;
+    try {
+      const { href, search } = new URL(url);
+      return href.slice(0, -search.length);
+    } catch {
+      return url;
+    }
+  });
+}
+
 export async function getPrettyLinks(
   text: string,
   entities: MessageEntity[],

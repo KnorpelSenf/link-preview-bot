@@ -15,6 +15,11 @@ import {
   emojiParser,
 } from "https://deno.land/x/grammy_emoji@v1.2.0/mod.ts";
 import { autoRetry } from "https://deno.land/x/grammy_auto_retry@v2.0.2/mod.ts";
+import {
+  getPrettyLinks,
+  hasParams,
+  stripParams,
+} from "./linkpreviewbot/extract.ts";
 
 type MyContext = Context & EmojiFlavor;
 
@@ -60,7 +65,28 @@ bot.command("resolve").branch(
       "Reply to a message to follow all redirects of the contained links!",
     ),
 );
-bot.callbackQuery(/^resolve:.*/, async (ctx) => {
+bot.callbackQuery(/^strip:/, async (ctx) => {
+  if (
+    ctx.callbackQuery.message?.text === undefined ||
+    ctx.callbackQuery.message.date === 0
+  ) {
+    await ctx.answerCallbackQuery("outdated button");
+    return;
+  }
+
+  const stripped = stripParams(ctx.callbackQuery.message.text, ctx.entities());
+  await Promise.all([
+    ctx.answerCallbackQuery(),
+    ctx.editMessageText(
+      stripped[0],
+      generateReplyMarkup(
+        ctx.callbackQuery.message.text,
+        ctx.callbackQuery.data.substring("strip:".length),
+      ),
+    ),
+  ]);
+});
+bot.callbackQuery(/^resolve:/, async (ctx) => {
   if (
     ctx.callbackQuery.message?.text === undefined ||
     ctx.callbackQuery.message.date === 0
@@ -173,6 +199,9 @@ function generateReplyMarkup(
       `${opts.show_above_text ? "✅" : "❌"} Show above text`,
       `${size}-${opts.show_above_text ? "below" : "above"}-${res}`,
     );
+  if (hasParams(url)) {
+    keyboard.row().text("Strip parameters", `strip:${size}-${pos}-${res}`);
+  }
   if (!resolved) {
     // command string
     keyboard.row().text("Resolve redirects", `resolve:${size}-${pos}-resolved`);
