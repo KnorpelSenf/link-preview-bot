@@ -57,6 +57,14 @@ It's <a href="https://github.com/KnorpelSenf/link-preview-bot">on GitHub</a>.`,
   },
 );
 
+bot.command("preview").branch(
+  (ctx) => ctx.msg.reply_to_message !== undefined,
+  handleLinks({ resolve: false }),
+  (ctx) =>
+    ctx.reply(
+      "Reply to a message to generate previews for all contained links!",
+    ),
+);
 bot.command("resolve").branch(
   (ctx) => ctx.msg.reply_to_message !== undefined,
   handleLinks({ resolve: true }),
