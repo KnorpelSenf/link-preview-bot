@@ -162,7 +162,7 @@ function generateReplyMarkup(
   };
   const resolved = res === "resolved";
 
-  const menu = new InlineKeyboard()
+  const keyboard = new InlineKeyboard()
     .text(
       `${opts.prefer_large_media ? "✅" : "❌"} Prefer large media`,
       `${opts.prefer_large_media ? "none" : "large"}-${pos}-${res}`,
@@ -175,10 +175,10 @@ function generateReplyMarkup(
     );
   if (!resolved) {
     // command string
-    menu.row().text("Resolve redirects", `resolve:${size}-${pos}-resolved`);
+    keyboard.row().text("Resolve redirects", `resolve:${size}-${pos}-resolved`);
   }
 
-  return { link_preview_options: opts, reply_markup: menu };
+  return { link_preview_options: opts, reply_markup: keyboard };
 }
 function handleLinks(options?: { resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
