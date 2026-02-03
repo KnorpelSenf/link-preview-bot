@@ -121,15 +121,12 @@ bot.on("callback_query:data", async (ctx) => {
 
   await Promise.all([
     ctx.answerCallbackQuery(),
-    ctx.editMessageText(
-      ctx.callbackQuery.message.text, {
-      entities: ctx.callbackQuery.message.entities,
+    ctx.editMessageText(ctx.callbackQuery.message.text, {
       ...generateReplyMarkup(
         ctx.callbackQuery.message.link_preview_options?.url,
         ctx.callbackQuery.data,
       ),
-    },
-    ),
+    }),
   ]);
 });
 bot.on("channel_post:text", async (ctx) => {
