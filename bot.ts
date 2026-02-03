@@ -112,14 +112,8 @@ bot.callbackQuery(/^resolve:/, async (ctx) => {
   ]);
 });
 bot.command("generate", async (ctx) => {
-  const url_entity = ctx.entities("url");
-  if (url_entity.length === 0) {
-    await ctx.reply("Please provide a URL.");
-    return;
-  }
-  const url = url_entity[0].text;
   if (ctx.msg.reply_to_message === undefined) {
-    await ctx.reply("Please reply to the message to add link preview.");
+    await ctx.reply("Please reply to a message to add link preview.");
     return;
   }
   const { text, entities } = ctx.msg.reply_to_message;
@@ -127,6 +121,12 @@ bot.command("generate", async (ctx) => {
     await ctx.reply("Please reply to a text message.");
     return;
   }
+  const urlEntity = ctx.entities("url");
+  if (urlEntity.length === 0) {
+    await ctx.reply("Please provide a URL for the link preview.");
+    return;
+  }
+  const url = urlEntity[0].text;
   await ctx.reply(text, {
     entities,
     ...generateReplyMarkup(url, "small-below-resolved"), // disable resolve button
