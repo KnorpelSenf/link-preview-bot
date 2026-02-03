@@ -59,7 +59,7 @@ It's <a href="https://github.com/KnorpelSenf/link-preview-bot">on GitHub</a>.`,
 
 bot.command("preview").branch(
   (ctx) => ctx.msg.reply_to_message !== undefined,
-  handleLinks({ resolve: false }),
+  handleLinks({ fromReply: true, resolve: false }),
   (ctx) =>
     ctx.reply(
       "Reply to a message to generate previews for all contained links!",
@@ -67,7 +67,7 @@ bot.command("preview").branch(
 );
 bot.command("resolve").branch(
   (ctx) => ctx.msg.reply_to_message !== undefined,
-  handleLinks({ resolve: true }),
+  handleLinks({ fromReply: true, resolve: true }),
   (ctx) =>
     ctx.reply(
       "Reply to a message to follow all redirects of the contained links!",
@@ -217,16 +217,18 @@ function generateReplyMarkup(
 
   return { link_preview_options: opts, reply_markup: keyboard };
 }
-function handleLinks(options?: { resolve?: boolean }) {
+function handleLinks(options?: { fromReply?: boolean; resolve?: boolean }) {
   return async (ctx: Filter<MyContext, "msg">, next: NextFunction) => {
     let msg: Message = ctx.msg;
-    let statusMessage: Message.TextMessage | undefined;
-    if (options?.resolve) {
+    if (options?.fromReply) {
       if (msg.reply_to_message === undefined) {
         throw new Error("Should not happen");
       }
-      statusMessage = await ctx.reply(ctx.emoji`${"thinking_face"}`);
       msg = msg.reply_to_message;
+    }
+    let statusMessage: Message.TextMessage | undefined;
+    if (options?.resolve) {
+      statusMessage = await ctx.reply(ctx.emoji`${"thinking_face"}`);
     }
     const t = msg.text ?? msg.caption;
     const e = msg.entities ?? msg.caption_entities;
