@@ -80,7 +80,7 @@ bot.callbackQuery(/^strip:/, async (ctx) => {
     ctx.editMessageText(
       stripped[0],
       generateReplyMarkup(
-        ctx.callbackQuery.message.text,
+        stripped[0],
         ctx.callbackQuery.data.substring("strip:".length),
       ),
     ),
